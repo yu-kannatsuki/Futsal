@@ -400,6 +400,34 @@
     <input type="file" id="gallery-file-input" style="display: none;" accept="image/*" onchange="addGalleryImage(event)">
     <input type="file" id="blog-file-input" style="display: none;" accept="image/*" onchange="addBlogCard(event)">
 
+    <!-- ▼▼ Firebase設定コード ▼▼ -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+      import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyB7fzGDN24uyUWfxaOpzN33bNkUWg_3VoI",
+        authDomain: "sdc-kumamoto.firebaseapp.com",
+        databaseURL: "https://sdc-kumamoto-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "sdc-kumamoto",
+        storageBucket: "sdc-kumamoto.firebasestorage.app",
+        messagingSenderId: "843112935632",
+        appId: "1:843112935632:web:8e4591ef7ab335120ceed5",
+        measurementId: "G-BQNTRQB0V5"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const database = getDatabase(app);
+
+      // 下のプログラムでもFirebaseを使えるようにするおまじない
+      window.db = database;
+      window.dbRef = ref;
+      window.dbPush = push;
+    </script>
+    <!-- ▲▲ Firebase設定コードここまで ▲▲ -->
+
     <script>
         // SPA風 画面切り替え
         function switchView(viewName) {
@@ -582,4 +610,3 @@ ${memoVal || 'なし'}
     </script>
 </body>
 </html>
-
