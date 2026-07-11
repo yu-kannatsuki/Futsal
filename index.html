@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>stella del calsio (ステラ デル カルチョ)</title>
+    <!-- ブラウザのタブ用アイコン -->
     <link rel="icon" href="emblem.png">
     
     <style>
@@ -150,7 +151,7 @@
             <div class="logo-wrapper" onclick="switchView('home')">
                 <div class="logo-img-container">
                     <img src="emblem.png" alt="エンブレム" class="logo-img" id="display-logo" onerror="this.src='https://placehold.jp/150x150.png?text=Logo'">
-                    <button class="change-logo-btn" onclick="event.stopPropagation(); document.getElementById('logo-file-input').click();">画像変更</button>
+                    <button class="change-logo-btn" onclick="changeLogo()">画像変更</button>
                 </div>
                 <div class="logo-text">
                     stella del calsio
@@ -173,6 +174,9 @@
         <p>初心者🔰・女性大歓迎！気軽にフットサルを楽しもう</p>
     </div>
 
+    <!-- =========================================
+         【ホーム画面】
+    ========================================= -->
     <main id="view-home">
         <section id="about">
             <div class="section-header">
@@ -189,21 +193,24 @@
             </div>
         </section>
 
+        <!-- ▼ ギャラリー セクション ▼ -->
         <section id="gallery">
             <div class="section-header">
                 <h2>📷 ギャラリー</h2>
-                <button class="admin-action-btn" onclick="triggerGalleryUpload()">➕ 画像を追加</button>
+                <div>
+                    <button class="admin-action-btn" onclick="saveGallery()" style="background-color: #27ae60; margin-right: 5px;">💾 変更を保存</button>
+                    <button class="admin-action-btn" onclick="triggerGalleryUpload()">➕ 画像を追加</button>
+                </div>
             </div>
             <div class="gallery-grid" id="gallery-container">
+                <!-- 初期データ（Firebaseから読み込まれたら上書きされます） -->
                 <div class="gallery-item" style="background-image: url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=500&auto=format&fit=crop');">
-                    <button class="delete-btn" onclick="deleteItem(this)">🗑️ 削除</button>
-                </div>
-                <div class="gallery-item" style="background-image: url('https://images.unsplash.com/photo-1518605368461-1e1e38ce713a?q=80&w=500&auto=format&fit=crop');">
                     <button class="delete-btn" onclick="deleteItem(this)">🗑️ 削除</button>
                 </div>
             </div>
         </section>
 
+        <!-- ▼ スケジュール（予約状況） セクション ▼ -->
         <section id="reserve">
             <div class="section-header">
                 <h2>📅 個サル祭予約状況</h2>
@@ -214,7 +221,7 @@
             </div>
             
             <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px; display: none;" id="admin-notice">
-                ※現在編集モードです。文字をクリックして書き換えられます。編集後は必ず「変更を保存」を押してください。
+                ※現在編集モードです。文字をクリックして書き換えられます。編集や追加の後は必ず各項目の「変更を保存」を押してください。
             </p>
 
             <div class="schedule-grid">
@@ -241,17 +248,6 @@
             <div class="section-header">
                 <h2>📝 ご予約フォーム</h2>
             </div>
-            
-            <details class="policy-accordion">
-                <summary>【備考・キャンセル規定】 ※ご予約前に必ずご確認ください</summary>
-                <div class="policy-content">
-                    開催最低人数(10名)を満たない場合、台風や地震、津波といった災害発生時など、中止になる場合がございます。<br>
-                    中止の場合は開始2時間前までを目途にお知らせします。<br><br>
-                    都合でキャンセルせざるを得ない場合はご連絡ください。無断キャンセルが続いた場合は、次回以降の参加をお断りする場合がございます。<br><br>
-                    急な仕事や用事、体調不良等による遅刻や早退は構いません。ただし参加費は一律のため通常料金となります。
-                </div>
-            </details>
-
             <form class="form-grid" id="reservation-form" onsubmit="submitReservation(event)">
                 <div class="form-group full-width">
                     <label>参加希望日<span class="required">*</span></label>
@@ -281,7 +277,6 @@
                     <label>メールアドレス<span class="required">*</span></label>
                     <input type="email" id="res-email" class="form-control" placeholder="例: example@mail.com" required>
                 </div>
-                
                 <div class="form-group full-width">
                     <label>参加人数<span class="required">*</span></label>
                     <select id="res-count" class="form-control" required>
@@ -292,22 +287,20 @@
                         <option value="5">5名</option>
                     </select>
                 </div>
-                
                 <div class="form-group full-width">
                     <label>ご質問・ご要望</label>
                     <textarea id="res-memo" class="form-control" rows="3" placeholder="ご自由に記入ください"></textarea>
                 </div>
-
                 <button type="submit" class="btn-submit">予約内容を確認する</button>
             </form>
         </section>
 
+        <!-- 予約キャンセル セクション -->
         <section id="cancel">
             <div class="section-header cancel-header">
                 <h2>❌ 予約のキャンセル</h2>
             </div>
             <p style="font-size: 0.9rem; margin-bottom: 15px;">ご都合が悪くなった場合は、以下のフォームからキャンセル用メールを作成して送信してください。</p>
-            
             <form class="form-grid" id="cancel-form" onsubmit="submitCancel(event)">
                 <div class="form-group full-width">
                     <label>キャンセルする参加予定日<span class="required">*</span></label>
@@ -324,52 +317,39 @@
                 <button type="submit" class="btn-cancel-submit">キャンセルメールを作成する</button>
             </form>
         </section>
-
-        <section id="sns">
-            <div class="section-header">
-                <h2>📱 連絡先 / 公式SNS</h2>
-            </div>
-            <div class="sns-grid">
-                <a href="https://line.me/R/ti/p/@099akbrr" target="_blank" class="sns-card sns-line">LINE公式アカウント</a>
-                <a href="https://x.com/sdc_kumamoto?s=11" target="_blank" class="sns-card sns-x">X (旧Twitter)</a>
-                <a href="https://www.instagram.com/sdc_stella.del.calcio?igsh=YzNrcHI3bDhkcm5u&utm_source=qr" target="_blank" class="sns-card sns-insta">Instagram</a>
-            </div>
-        </section>
     </main>
 
+    <!-- =========================================
+         【ブログ画面】
+    ========================================= -->
     <main id="view-blog" style="display: none;">
         <section>
             <div class="section-header">
                 <h2>📝 公式ブログ</h2>
                 <div>
-                    <button class="admin-action-btn" onclick="triggerBlogUpload()" style="margin-bottom: 10px;">✍️ 新規ブログを投稿</button>
+                    <button class="admin-action-btn" onclick="saveBlog()" style="background-color: #27ae60; margin-right: 5px;">💾 変更を保存</button>
+                    <button class="admin-action-btn" onclick="triggerBlogUpload()">✍️ 新規ブログを投稿</button>
                     <button class="admin-toggle-btn" onclick="toggleEditMode()">✍️ 管理者モード</button>
                 </div>
             </div>
             <div class="blog-grid" id="blog-container">
-                <div class="blog-card">
-                    <button class="delete-btn" onclick="deleteItem(this)">🗑️ 削除</button>
-                    <div class="blog-img" style="background-image: url('https://images.unsplash.com/photo-1511886929837-354d827aae26?q=80&w=1000&auto=format&fit=crop');"></div>
-                    <div class="blog-content">
-                        <div class="blog-date">2026.07.10</div>
-                        <div class="blog-title editable">本日の個サルも大盛況でした！</div>
-                    </div>
-                </div>
+                <!-- 初期データ（Firebaseから読み込まれます） -->
             </div>
         </section>
     </main>
 
+    <!-- =========================================
+         確認モーダル
+    ========================================= -->
     <div id="confirm-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">内容をご確認ください。</div>
-            
             <div class="confirm-section-title">予約内容</div>
             <table class="confirm-table">
                 <tr><th>ご予約内容</th><td>個サル参加</td></tr>
                 <tr><th>日時</th><td id="confirm-date-display"></td></tr>
                 <tr><th>参加人数</th><td id="confirm-count-display"></td></tr>
             </table>
-
             <div class="confirm-section-title">予約者情報</div>
             <table class="confirm-table">
                 <tr><th>お名前</th><td id="confirm-name"></td></tr>
@@ -378,7 +358,6 @@
                 <tr><th>電話番号</th><td id="confirm-tel"></td></tr>
                 <tr><th>メールアドレス</th><td id="confirm-email"></td></tr>
             </table>
-
             <div class="modal-buttons">
                 <button onclick="document.getElementById('confirm-modal').style.display='none'">キャンセル</button>
                 <a id="send-mail-link" href="#">予約を確定し送信</a>
@@ -386,10 +365,7 @@
         </div>
     </div>
 
-    <input type="file" id="logo-file-input" style="display: none;" accept="image/*" onchange="changeLogo(event)">
-    <input type="file" id="gallery-file-input" style="display: none;" accept="image/*" onchange="addGalleryImage(event)">
-    <input type="file" id="blog-file-input" style="display: none;" accept="image/*" onchange="addBlogCard(event)">
-
+    <!-- ▼▼ Firebase設定コード ▼▼ -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
@@ -410,25 +386,26 @@
       const analytics = getAnalytics(app);
       const database = getDatabase(app);
 
-      // 下のプログラムでもFirebaseを使えるようにするおまじない
       window.db = database;
       window.dbRef = ref;
       window.dbPush = push;
-      window.dbSet = set;           // 追加
-      window.dbOnValue = onValue;   // 追加
+      window.dbSet = set;
+      window.dbOnValue = onValue;
     </script>
+    <!-- ▲▲ Firebase設定コードここまで ▲▲ -->
+
     <script>
-        // SPA風 画面切り替え
         function switchView(viewName) {
             document.getElementById('view-home').style.display = (viewName === 'home') ? 'block' : 'none';
             document.getElementById('view-blog').style.display = (viewName === 'blog') ? 'block' : 'none';
             window.scrollTo(0, 0);
         }
 
-        // 管理者モード・削除機能
+        // ===================================
+        // 管理者モード・UI操作
+        // ===================================
         let isEditMode = false;
         const adminPassword = "yus10098109";
-        let tempBlogTitle = ""; 
 
         function toggleEditMode() {
             if (!isEditMode) {
@@ -448,72 +425,176 @@
         }
 
         function deleteItem(btn) {
-            if(confirm("本当に削除しますか？")) btn.parentElement.remove();
+            if(confirm("本当に削除しますか？\n※削除後は必ず「変更を保存」ボタンを押してください。")) {
+                btn.parentElement.remove();
+            }
         }
 
-        function changeLogo(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('display-logo').src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-            event.target.value = ''; 
+        function changeLogo() {
+            alert("💡 エンブレム（ロゴ）を変更する場合は、新しい画像を「emblem.png」という名前にして、GitHubに上書きアップロードしてください。");
         }
 
-        function triggerGalleryUpload() { document.getElementById('gallery-file-input').click(); }
-        function addGalleryImage(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const newDiv = document.createElement('div');
-                newDiv.className = 'gallery-item';
-                newDiv.style.backgroundImage = `url(${e.target.result})`;
-                newDiv.innerHTML = `<button class="delete-btn" onclick="deleteItem(this)" style="display: ${isEditMode ? 'block' : 'none'}">🗑️ 削除</button>`;
-                const container = document.getElementById('gallery-container');
-                container.insertBefore(newDiv, container.firstChild);
-            }
-            reader.readAsDataURL(file);
-            event.target.value = ''; 
+        function triggerGalleryUpload() {
+            const url = prompt("追加する画像のURLを貼り付けてください\n（例: https://.../image.jpg）");
+            if (!url) return;
+            const newDiv = document.createElement('div');
+            newDiv.className = 'gallery-item';
+            newDiv.style.backgroundImage = `url(${url})`;
+            newDiv.innerHTML = `<button class="delete-btn" onclick="deleteItem(this)" style="display: block">🗑️ 削除</button>`;
+            const container = document.getElementById('gallery-container');
+            container.insertBefore(newDiv, container.firstChild);
         }
 
         function triggerBlogUpload() {
-            tempBlogTitle = prompt("ブログのタイトルを入力してください：");
-            if (!tempBlogTitle) return; 
-            document.getElementById('blog-file-input').click();
-        }
-        function addBlogCard(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const today = new Date();
-                const dateStr = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
-                const newCard = document.createElement('div');
-                newCard.className = 'blog-card';
-                newCard.innerHTML = `
-                    <button class="delete-btn" onclick="deleteItem(this)" style="display: ${isEditMode ? 'block' : 'none'}">🗑️ 削除</button>
-                    <div class="blog-img" style="background-image: url('${e.target.result}');"></div>
-                    <div class="blog-content">
-                        <div class="blog-date">${dateStr}</div>
-                        <div class="blog-title editable" contenteditable="${isEditMode}">${tempBlogTitle}</div>
-                    </div>
-                `;
-                const container = document.getElementById('blog-container');
-                container.insertBefore(newCard, container.firstChild);
-            }
-            reader.readAsDataURL(file);
-            event.target.value = ''; 
+            const title = prompt("ブログのタイトルを入力してください：");
+            if (!title) return;
+            const url = prompt("ブログ画像のURLを貼り付けてください\n（例: https://.../image.jpg）");
+            if (!url) return;
+            
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+            const newCard = document.createElement('div');
+            newCard.className = 'blog-card';
+            newCard.innerHTML = `
+                <button class="delete-btn" onclick="deleteItem(this)" style="display: block">🗑️ 削除</button>
+                <div class="blog-img" style="background-image: url('${url}');"></div>
+                <div class="blog-content">
+                    <div class="blog-date">${dateStr}</div>
+                    <div class="blog-title editable" contenteditable="true">${title}</div>
+                </div>
+            `;
+            const container = document.getElementById('blog-container');
+            container.insertBefore(newCard, container.firstChild);
         }
 
         // ===================================
-        // 予約・自動返信のシミュレーション
+        // データベース保存機能 (スケジュール・ギャラリー・ブログ)
+        // ===================================
+        function saveSchedule() {
+            const scheduleData = {
+                card1: {
+                    date: document.getElementById('s1-date').innerText,
+                    time: document.getElementById('s1-time').innerText,
+                    place: document.getElementById('s1-place').innerText,
+                    badge: document.getElementById('s1-badge').innerText,
+                    count: document.getElementById('s1-count').innerText
+                },
+                card2: {
+                    date: document.getElementById('s2-date').innerText,
+                    time: document.getElementById('s2-time').innerText,
+                    place: document.getElementById('s2-place').innerText,
+                    badge: document.getElementById('s2-badge').innerText,
+                    count: document.getElementById('s2-count').innerText
+                }
+            };
+            window.dbSet(window.dbRef(window.db, 'schedule'), scheduleData)
+                .then(() => alert("スケジュールの変更を保存しました！"))
+                .catch((e) => alert("保存に失敗しました: " + e));
+        }
+
+        function saveGallery() {
+            const items = document.querySelectorAll('#gallery-container .gallery-item');
+            let urls = [];
+            items.forEach(item => {
+                let bg = item.style.backgroundImage;
+                let url = bg.slice(4, -1).replace(/["']/g, ""); // url("...") からURLだけを抽出
+                if(url) urls.push(url);
+            });
+            window.dbSet(window.dbRef(window.db, 'gallery'), urls)
+                .then(() => alert("ギャラリーを保存しました！"))
+                .catch((e) => alert("保存に失敗しました: " + e));
+        }
+
+        function saveBlog() {
+            const cards = document.querySelectorAll('#blog-container .blog-card');
+            let blogs = [];
+            cards.forEach(card => {
+                let bg = card.querySelector('.blog-img').style.backgroundImage;
+                let url = bg.slice(4, -1).replace(/["']/g, "");
+                let date = card.querySelector('.blog-date').innerText;
+                let title = card.querySelector('.blog-title').innerText;
+                blogs.push({ url, date, title });
+            });
+            window.dbSet(window.dbRef(window.db, 'blog'), blogs)
+                .then(() => alert("ブログを保存しました！"))
+                .catch((e) => alert("保存に失敗しました: " + e));
+        }
+
+        // ===================================
+        // 初期読み込み処理 (ページ表示時に実行)
+        // ===================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkFirebaseReady = setInterval(() => {
+                if (window.dbOnValue && window.db) {
+                    clearInterval(checkFirebaseReady);
+                    
+                    // スケジュール読み込み
+                    window.dbOnValue(window.dbRef(window.db, 'schedule'), (snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            if(data.card1) {
+                                document.getElementById('s1-date').innerText = data.card1.date;
+                                document.getElementById('s1-time').innerText = data.card1.time;
+                                document.getElementById('s1-place').innerText = data.card1.place;
+                                document.getElementById('s1-badge').innerText = data.card1.badge;
+                                document.getElementById('s1-count').innerText = data.card1.count;
+                            }
+                            if(data.card2) {
+                                document.getElementById('s2-date').innerText = data.card2.date;
+                                document.getElementById('s2-time').innerText = data.card2.time;
+                                document.getElementById('s2-place').innerText = data.card2.place;
+                                document.getElementById('s2-badge').innerText = data.card2.badge;
+                                document.getElementById('s2-count').innerText = data.card2.count;
+                            }
+                        }
+                    });
+
+                    // ギャラリー読み込み
+                    window.dbOnValue(window.dbRef(window.db, 'gallery'), (snapshot) => {
+                        const data = snapshot.val();
+                        if (data && Array.isArray(data)) {
+                            const container = document.getElementById('gallery-container');
+                            container.innerHTML = '';
+                            data.forEach(url => {
+                                const newDiv = document.createElement('div');
+                                newDiv.className = 'gallery-item';
+                                newDiv.style.backgroundImage = `url('${url}')`;
+                                newDiv.innerHTML = `<button class="delete-btn" onclick="deleteItem(this)" style="display: ${isEditMode ? 'block' : 'none'}">🗑️ 削除</button>`;
+                                container.appendChild(newDiv);
+                            });
+                        }
+                    });
+
+                    // ブログ読み込み
+                    window.dbOnValue(window.dbRef(window.db, 'blog'), (snapshot) => {
+                        const data = snapshot.val();
+                        if (data && Array.isArray(data)) {
+                            const container = document.getElementById('blog-container');
+                            container.innerHTML = '';
+                            data.forEach(blog => {
+                                const newCard = document.createElement('div');
+                                newCard.className = 'blog-card';
+                                newCard.innerHTML = `
+                                    <button class="delete-btn" onclick="deleteItem(this)" style="display: ${isEditMode ? 'block' : 'none'}">🗑️ 削除</button>
+                                    <div class="blog-img" style="background-image: url('${blog.url}');"></div>
+                                    <div class="blog-content">
+                                        <div class="blog-date">${blog.date}</div>
+                                        <div class="blog-title editable" contenteditable="${isEditMode}">${blog.title}</div>
+                                    </div>
+                                `;
+                                container.appendChild(newCard);
+                            });
+                        }
+                    });
+                }
+            }, 100);
+        });
+
+        // ===================================
+        // メール送信シミュレーション (予約・キャンセル)
         // ===================================
         function submitReservation(event) {
             event.preventDefault();
-
             const dateVal = document.getElementById('res-date').value;
             const nameVal = document.getElementById('res-name').value;
             const kanaVal = document.getElementById('res-kana').value;
@@ -563,16 +644,11 @@ ${memoVal || 'なし'}
 +++-----------------------------+++`;
             
             document.getElementById('send-mail-link').href = `mailto:soccer.yus.n@icloud.com?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
-
             document.getElementById('confirm-modal').style.display = 'block';
         }
 
-        // ===================================
-        // キャンセルメール送信機能
-        // ===================================
         function submitCancel(event) {
             event.preventDefault();
-            
             const cancelDate = document.getElementById('cancel-date').value;
             const cancelName = document.getElementById('cancel-name').value;
             const cancelTel = document.getElementById('cancel-tel').value;
@@ -585,84 +661,10 @@ ${memoVal || 'なし'}
             }
 
             const subject = encodeURIComponent("個サル予約のキャンセル依頼");
-            const bodyText = `以下の予約のキャンセルをお願いいたします。
-
-【キャンセル情報】
-キャンセルする予約日：${displayDate}
-ご予約者名：${cancelName}
-電話番号：${cancelTel}
-
-よろしくお願いいたします。`;
+            const bodyText = `以下の予約のキャンセルをお願いいたします。\n\n【キャンセル情報】\nキャンセルする予約日：${displayDate}\nご予約者名：${cancelName}\n電話番号：${cancelTel}\n\nよろしくお願いいたします。`;
 
             window.location.href = `mailto:soccer.yus.n@icloud.com?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
         }
-
-        // ===================================
-        // データベースの保存と読み込み (スケジュール)
-        // ===================================
-        function saveSchedule() {
-            // 画面の入力内容をまとめて取得する
-            const scheduleData = {
-                card1: {
-                    date: document.getElementById('s1-date').innerText,
-                    time: document.getElementById('s1-time').innerText,
-                    place: document.getElementById('s1-place').innerText,
-                    badge: document.getElementById('s1-badge').innerText,
-                    count: document.getElementById('s1-count').innerText
-                },
-                card2: {
-                    date: document.getElementById('s2-date').innerText,
-                    time: document.getElementById('s2-time').innerText,
-                    place: document.getElementById('s2-place').innerText,
-                    badge: document.getElementById('s2-badge').innerText,
-                    count: document.getElementById('s2-count').innerText
-                }
-            };
-
-            // Firebaseに保存（上書き）
-            const dbRef = window.dbRef(window.db, 'schedule');
-            window.dbSet(dbRef, scheduleData)
-                .then(() => {
-                    alert("スケジュールの変更を保存しました！");
-                    // 保存後に自動で編集モードを終了させる
-                    if (isEditMode) toggleEditMode();
-                })
-                .catch((error) => {
-                    alert("保存に失敗しました: " + error);
-                });
-        }
-
-        // ページを開いたときに自動でFirebaseからデータを読み込む
-        document.addEventListener('DOMContentLoaded', () => {
-            // Firebaseの準備ができるまで少し待つ処理
-            const checkFirebaseReady = setInterval(() => {
-                if (window.dbOnValue && window.db) {
-                    clearInterval(checkFirebaseReady);
-                    
-                    const dbRef = window.dbRef(window.db, 'schedule');
-                    window.dbOnValue(dbRef, (snapshot) => {
-                        const data = snapshot.val();
-                        if (data) {
-                            // データベースにデータがあれば、画面の文字を書き換える
-                            if(data.card1) {
-                                document.getElementById('s1-date').innerText = data.card1.date;
-                                document.getElementById('s1-time').innerText = data.card1.time;
-                                document.getElementById('s1-place').innerText = data.card1.place;
-                                document.getElementById('s1-badge').innerText = data.card1.badge;
-                                document.getElementById('s1-count').innerText = data.card1.count;
-                            }
-                            if(data.card2) {
-                                document.getElementById('s2-date').innerText = data.card2.date;
-                                document.getElementById('s2-time').innerText = data.card2.time;
-                                document.getElementById('s2-place').innerText = data.card2.place;
-                                document.getElementById('s2-badge').innerText = data.card2.badge;
-                                document.getElementById('s2-count').innerText = data.card2.count;
-                            }
-                        }
-                    });
-                }
-            }, 100);
-        });
     </script>
 </body>
 </html>
