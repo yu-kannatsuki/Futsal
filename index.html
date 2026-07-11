@@ -217,7 +217,6 @@
                 <h2>📝 ご予約方法・フォーム</h2>
             </div>
             
-            <!-- 予約手順の案内 -->
             <div class="instruction-box">
                 <strong>【ご予約の手順】</strong><br>
                 1. 以下のフォームに必要事項を入力し、「予約内容を確認する」を押してください。<br>
@@ -236,13 +235,9 @@
             </details>
 
             <form class="form-grid" id="reservation-form" onsubmit="submitReservation(event)">
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label>参加日<span class="required">*</span></label>
                     <input type="date" id="res-date" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>参加時間<span class="required">*</span></label>
-                    <input type="time" id="res-time" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>お名前<span class="required">*</span></label>
@@ -276,7 +271,6 @@
                 <h2>❌ キャンセル方法・フォーム</h2>
             </div>
             
-            <!-- キャンセル手順の案内 -->
             <div class="instruction-box">
                 <strong>【キャンセルの手順】</strong><br>
                 1. 以下のフォームに、ご予約時の情報を入力してください。<br>
@@ -569,7 +563,6 @@
         function submitReservation(event) {
             event.preventDefault();
             const dateVal = document.getElementById('res-date').value;
-            const timeVal = document.getElementById('res-time').value;
             const nameVal = document.getElementById('res-name').value;
             const telVal = document.getElementById('res-tel').value;
             const countVal = document.getElementById('res-count').value;
@@ -582,7 +575,7 @@
                 displayDate = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${days[d.getDay()]})`;
             }
 
-            const dateStringFull = `${displayDate} ${timeVal}`;
+            const dateStringFull = `${displayDate}`;
 
             document.getElementById('confirm-date-display').innerText = dateStringFull;
             document.getElementById('confirm-count-display').innerText = `${countVal}名`;
@@ -594,7 +587,7 @@
 
 +++-----------------------------+++
 【ご予約内容】
-予約日時：${displayDate} ${timeVal}
+予約日時：${displayDate}
 参加人数：${countVal}名
 
 【ご予約者情報】
