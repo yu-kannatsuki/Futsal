@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>stella del calsio (ステラ デル カルチョ)</title>
-    <!-- ブラウザのタブ用アイコン -->
     <link rel="icon" href="emblem.png">
     
     <style>
@@ -174,9 +173,6 @@
         <p>初心者🔰・女性大歓迎！気軽にフットサルを楽しもう</p>
     </div>
 
-    <!-- =========================================
-         【ホーム画面】
-    ========================================= -->
     <main id="view-home">
         <section id="about">
             <div class="section-header">
@@ -211,30 +207,32 @@
         <section id="reserve">
             <div class="section-header">
                 <h2>📅 個サル祭予約状況</h2>
-                <button class="admin-toggle-btn" onclick="toggleEditMode()">✍️ 管理者モード</button>
+                <div>
+                    <button class="admin-action-btn" id="save-schedule-btn" onclick="saveSchedule()" style="background-color: #27ae60; margin-right: 5px;">💾 変更を保存</button>
+                    <button class="admin-toggle-btn" onclick="toggleEditMode()">✍️ 管理者モード</button>
+                </div>
             </div>
             
             <p style="font-size: 0.85rem; color: #888; margin-bottom: 15px; display: none;" id="admin-notice">
-                ※現在編集モードです。黄色い枠の文字をクリックして書き換えたり、画像やブログを追加・削除できます。
+                ※現在編集モードです。文字をクリックして書き換えられます。編集後は必ず「変更を保存」を押してください。
             </p>
 
             <div class="schedule-grid">
-                <!-- 時間と場所を編集可能に追加 -->
                 <div class="schedule-card">
-                    <div class="schedule-date editable">開催日：7月19日（日）</div>
-                    <div class="schedule-info editable">⏰ 時間：19:00〜20:30</div>
-                    <div class="schedule-info editable">📍 場所：スキルアップフットサルパーク</div>
-                    <div class="schedule-badge badge-green editable">日曜個サル祭</div>
+                    <div class="schedule-date editable" id="s1-date">開催日：7月19日（日）</div>
+                    <div class="schedule-info editable" id="s1-time">⏰ 時間：19:00〜20:30</div>
+                    <div class="schedule-info editable" id="s1-place">📍 場所：スキルアップフットサルパーク</div>
+                    <div class="schedule-badge badge-green editable" id="s1-badge">日曜個サル祭</div>
                     <div style="font-size: 0.8rem; color:#777;">現在の参加人数</div>
-                    <div class="schedule-participants-count editable" style="color: #27ae60;">12名</div>
+                    <div class="schedule-participants-count editable" id="s1-count" style="color: #27ae60;">12名</div>
                 </div>
                 <div class="schedule-card">
-                    <div class="schedule-date editable">開催日：7月22日（水）</div>
-                    <div class="schedule-info editable">⏰ 時間：19:00〜20:30</div>
-                    <div class="schedule-info editable">📍 場所：スキルアップフットサルパーク</div>
-                    <div class="schedule-badge badge-purple editable">水曜個サル祭</div>
+                    <div class="schedule-date editable" id="s2-date">開催日：7月22日（水）</div>
+                    <div class="schedule-info editable" id="s2-time">⏰ 時間：19:00〜20:30</div>
+                    <div class="schedule-info editable" id="s2-place">📍 場所：スキルアップフットサルパーク</div>
+                    <div class="schedule-badge badge-purple editable" id="s2-badge">水曜個サル祭</div>
                     <div style="font-size: 0.8rem; color:#777;">現在の参加人数</div>
-                    <div class="schedule-participants-count editable" style="color: #8e44ad;">10名</div>
+                    <div class="schedule-participants-count editable" id="s2-count" style="color: #8e44ad;">10名</div>
                 </div>
             </div>
         </section>
@@ -304,7 +302,6 @@
             </form>
         </section>
 
-        <!-- 予約キャンセル セクション -->
         <section id="cancel">
             <div class="section-header cancel-header">
                 <h2>❌ 予約のキャンセル</h2>
@@ -340,9 +337,6 @@
         </section>
     </main>
 
-    <!-- =========================================
-         【ブログ画面】
-    ========================================= -->
     <main id="view-blog" style="display: none;">
         <section>
             <div class="section-header">
@@ -365,9 +359,6 @@
         </section>
     </main>
 
-    <!-- =========================================
-         確認モーダル
-    ========================================= -->
     <div id="confirm-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">内容をご確認ください。</div>
@@ -395,16 +386,14 @@
         </div>
     </div>
 
-    <!-- 隠しファイル入力 -->
     <input type="file" id="logo-file-input" style="display: none;" accept="image/*" onchange="changeLogo(event)">
     <input type="file" id="gallery-file-input" style="display: none;" accept="image/*" onchange="addGalleryImage(event)">
     <input type="file" id="blog-file-input" style="display: none;" accept="image/*" onchange="addBlogCard(event)">
 
-    <!-- ▼▼ Firebase設定コード ▼▼ -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-      import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+      import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyB7fzGDN24uyUWfxaOpzN33bNkUWg_3VoI",
@@ -425,9 +414,9 @@
       window.db = database;
       window.dbRef = ref;
       window.dbPush = push;
+      window.dbSet = set;           // 追加
+      window.dbOnValue = onValue;   // 追加
     </script>
-    <!-- ▲▲ Firebase設定コードここまで ▲▲ -->
-
     <script>
         // SPA風 画面切り替え
         function switchView(viewName) {
@@ -607,6 +596,73 @@ ${memoVal || 'なし'}
 
             window.location.href = `mailto:soccer.yus.n@icloud.com?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
         }
+
+        // ===================================
+        // データベースの保存と読み込み (スケジュール)
+        // ===================================
+        function saveSchedule() {
+            // 画面の入力内容をまとめて取得する
+            const scheduleData = {
+                card1: {
+                    date: document.getElementById('s1-date').innerText,
+                    time: document.getElementById('s1-time').innerText,
+                    place: document.getElementById('s1-place').innerText,
+                    badge: document.getElementById('s1-badge').innerText,
+                    count: document.getElementById('s1-count').innerText
+                },
+                card2: {
+                    date: document.getElementById('s2-date').innerText,
+                    time: document.getElementById('s2-time').innerText,
+                    place: document.getElementById('s2-place').innerText,
+                    badge: document.getElementById('s2-badge').innerText,
+                    count: document.getElementById('s2-count').innerText
+                }
+            };
+
+            // Firebaseに保存（上書き）
+            const dbRef = window.dbRef(window.db, 'schedule');
+            window.dbSet(dbRef, scheduleData)
+                .then(() => {
+                    alert("スケジュールの変更を保存しました！");
+                    // 保存後に自動で編集モードを終了させる
+                    if (isEditMode) toggleEditMode();
+                })
+                .catch((error) => {
+                    alert("保存に失敗しました: " + error);
+                });
+        }
+
+        // ページを開いたときに自動でFirebaseからデータを読み込む
+        document.addEventListener('DOMContentLoaded', () => {
+            // Firebaseの準備ができるまで少し待つ処理
+            const checkFirebaseReady = setInterval(() => {
+                if (window.dbOnValue && window.db) {
+                    clearInterval(checkFirebaseReady);
+                    
+                    const dbRef = window.dbRef(window.db, 'schedule');
+                    window.dbOnValue(dbRef, (snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            // データベースにデータがあれば、画面の文字を書き換える
+                            if(data.card1) {
+                                document.getElementById('s1-date').innerText = data.card1.date;
+                                document.getElementById('s1-time').innerText = data.card1.time;
+                                document.getElementById('s1-place').innerText = data.card1.place;
+                                document.getElementById('s1-badge').innerText = data.card1.badge;
+                                document.getElementById('s1-count').innerText = data.card1.count;
+                            }
+                            if(data.card2) {
+                                document.getElementById('s2-date').innerText = data.card2.date;
+                                document.getElementById('s2-time').innerText = data.card2.time;
+                                document.getElementById('s2-place').innerText = data.card2.place;
+                                document.getElementById('s2-badge').innerText = data.card2.badge;
+                                document.getElementById('s2-count').innerText = data.card2.count;
+                            }
+                        }
+                    });
+                }
+            }, 100);
+        });
     </script>
 </body>
 </html>
